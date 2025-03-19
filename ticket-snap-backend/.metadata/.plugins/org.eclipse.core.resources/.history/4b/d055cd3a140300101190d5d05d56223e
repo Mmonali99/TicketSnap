@@ -1,0 +1,5 @@
+package com.ticketsnap.repository;
+
+public class PaymentRepository {
+
+}

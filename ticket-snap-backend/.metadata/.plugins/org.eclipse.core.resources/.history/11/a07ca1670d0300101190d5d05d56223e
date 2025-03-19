@@ -1,0 +1,5 @@
+package com.ticketsnap.controllers;
+
+public class AuthController {
+
+}

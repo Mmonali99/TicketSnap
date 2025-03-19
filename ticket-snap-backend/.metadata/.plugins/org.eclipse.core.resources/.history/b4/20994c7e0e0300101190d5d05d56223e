@@ -1,0 +1,5 @@
+package com.ticketsnap.exceptions;
+
+public class BadRequestException {
+
+}

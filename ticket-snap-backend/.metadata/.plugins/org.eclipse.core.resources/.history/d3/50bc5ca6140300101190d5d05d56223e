@@ -1,0 +1,5 @@
+package com.ticketsnap.service;
+
+public class RecommendationService {
+
+}

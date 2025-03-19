@@ -1,0 +1,154 @@
+USE ticketsnap_db;
+
+CREATE TABLE ticketsnap_users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    roles VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE movies (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    language VARCHAR(255),
+    rating DOUBLE,
+    duration INT,
+    category VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE region (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    longitude DOUBLE,
+    latitude DOUBLE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE theatre (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    address VARCHAR(255),
+    region_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (region_id) REFERENCES region(id)
+);
+
+CREATE TABLE screen (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    theatre_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (theatre_id) REFERENCES theatre(id)
+);
+
+CREATE TABLE seat (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    seat_number INT,
+    row_num CHAR(1),
+    col_num INT,
+    seat_type ENUM('GOLD', 'SILVER', 'DIAMOND'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE movie_show (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    movie_id BIGINT,
+    screen_id BIGINT,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (movie_id) REFERENCES movies(id),
+    FOREIGN KEY (screen_id) REFERENCES screen(id)
+);
+
+
+CREATE TABLE show_seat (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    show_id BIGINT,
+    seat_id BIGINT,
+    show_seat_status ENUM('OCCUPIED', 'AVAILABLE', 'BLOCKED'),
+    price DOUBLE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (show_id) REFERENCES movie_show(id),
+    FOREIGN KEY (seat_id) REFERENCES seat(id)
+);
+
+CREATE TABLE booking (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    booked_at TIMESTAMP,
+    show_id BIGINT,
+    amount DOUBLE,
+    user_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (show_id) REFERENCES movie_show(id),
+    FOREIGN KEY (user_id) REFERENCES ticketsnap_users(id)
+);
+
+CREATE TABLE booking (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    booked_at TIMESTAMP,
+    show_id BIGINT,
+    amount DOUBLE,
+    user_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (show_id) REFERENCES movie_show(id),
+    FOREIGN KEY (user_id) REFERENCES ticketsnap_users(id)
+);
+
+
+CREATE TABLE booking_show_seat (
+    booking_id BIGINT,
+    show_seat_id BIGINT,
+    PRIMARY KEY (booking_id, show_seat_id),
+    FOREIGN KEY (booking_id) REFERENCES booking(id),
+    FOREIGN KEY (show_seat_id) REFERENCES show_seat(id)
+);
+
+
+CREATE TABLE payment (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    booking_id BIGINT,
+    amount DOUBLE,
+    status ENUM('PENDING', 'COMPLETED', 'FAILED'),
+    payment_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES booking(id)
+);
+
+CREATE TABLE review (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT,
+    movie_id BIGINT,
+    rating DOUBLE,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES ticketsnap_users(id),
+    FOREIGN KEY (movie_id) REFERENCES movies(id)
+);
+
+CREATE TABLE notification (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT,
+    message TEXT,
+    type ENUM('EMAIL', 'SMS'),
+    sent_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES ticketsnap_users(id)
+);
+SHOW TABLES;

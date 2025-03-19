@@ -1,0 +1,5 @@
+package com.ticketsnap;
+
+public class TicketsnapApplication {
+
+}

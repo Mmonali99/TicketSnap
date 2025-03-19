@@ -1,0 +1,35 @@
+package com.ticketsnap.controllers;
+
+
+import com.example.ticketsnap.dtos.LoginRequestDto;
+import com.example.ticketsnap.dtos.LoginResponseDto;
+import com.example.ticketsnap.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    private final AuthService authService;
+
+    @Autowired
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResponseDto login(@RequestBody LoginRequestDto request) {
+        String token = authService.authenticate(request.getEmail(), request.getPassword());
+        return LoginResponseDto.builder().token(token).build();
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public String logout() {
+        // Invalidate token logic can be added if using a blacklist
+        return "Logged out successfully";
+    }
+}
